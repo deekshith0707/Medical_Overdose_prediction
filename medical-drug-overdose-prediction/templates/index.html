@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medical Drug Overdose Prediction</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Medical Drug Overdose Prediction</h1>
+        <p>Please fill the details below to predict your overdose risk:</p>
+
+        <form method="POST" action="/predict">
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="number" name="age" id="age" placeholder="Enter Age" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="dosage">Dosage (mg):</label>
+                <input type="number" name="dosage" id="dosage" placeholder="Enter Dosage (mg)" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="duration">Duration (months):</label>
+                <input type="number" name="duration" id="duration" placeholder="Duration of Drug Use" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="prioroverdose">Prior Overdose (1=Yes, 0=No):</label>
+                <input type="number" name="prioroverdose" id="prioroverdose" placeholder="1 for Yes, 0 for No" required>
+            </div>
+            
+            <button type="submit" class="btn">Predict Overdose Risk</button>
+        </form>
+
+        {% if prediction_text %}
+            <div class="result">
+                <h3>Prediction Result:</h3>
+                <p>{{ prediction_text }}</p>
+            </div>
+
+            <div id="pie-chart" class="chart-container"></div>
+            <script>
+                var risk = {{ probability }};
+                var data = [{
+                    values: [risk, 100 - risk],
+                    labels: ['Overdose Risk (%)', 'Safe (%)'],
+                    type: 'pie',
+                    textinfo: 'label+percent',
+                    textposition: 'inside',
+                    hole: .4
+                }];
+                
+                var layout = {
+                    title: 'Predicted Overdose Risk',
+                    height: 400,
+                    width: 400
+                };
+                
+                Plotly.newPlot('pie-chart', data, layout);
+            </script>
+        {% endif %}
+    </div>
+</body>
+</html>
